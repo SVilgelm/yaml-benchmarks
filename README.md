@@ -12,7 +12,7 @@ BenchmarkUnmarshal/goccy-16                10000            213185 ns/op        
 
 ## libraries
 
-* github.com/ghodss/yaml v1.0.0
-* github.com/goccy/go-yaml v1.9.5
-* gopkg.in/yaml.v2 v2.4.0
-* gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
+* <https://github.com/ghodss/yaml> v1.0.0
+* <https://github.com/goccy/go-yaml> v1.9.5
+* <https://gopkg.in/yaml.v2> v2.4.0
+* <https://gopkg.in/yaml.v3> v3.0.0-20210107192922-496545a6307b

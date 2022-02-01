@@ -23,5 +23,78 @@
   "int": {
     "1": "foo",
     "2": "bar"
+  },
+  "definitions": {
+    "steps": [
+      {
+        "step": {
+          "artifacts": [
+            "target/**"
+          ],
+          "name": "Build and test",
+          "script": [
+            "mvn package"
+          ]
+        }
+      },
+      {
+        "step": {
+          "deployment": "test",
+          "name": "Deploy",
+          "script": [
+            "./deploy.sh target/my-app.jar"
+          ]
+        }
+      }
+    ]
+  },
+  "pipelines": {
+    "branches": {
+      "develop": [
+        {
+          "step": {
+            "artifacts": [
+              "target/**"
+            ],
+            "name": "Build and test",
+            "script": [
+              "mvn package"
+            ]
+          }
+        },
+        {
+          "step": {
+            "deployment": "test",
+            "name": "Deploy",
+            "script": [
+              "./deploy.sh target/my-app.jar"
+            ]
+          }
+        }
+      ],
+      "main": [
+        {
+          "step": {
+            "artifacts": [
+              "target/**"
+            ],
+            "name": "Build and test",
+            "script": [
+              "mvn package"
+            ]
+          }
+        },
+        {
+          "step": {
+            "deployment": "production",
+            "name": "Deploy",
+            "script": [
+              "./deploy.sh target/my-app.jar"
+            ],
+            "trigger": "manual"
+          }
+        }
+      ]
+    }
   }
 }

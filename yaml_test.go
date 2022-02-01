@@ -17,14 +17,7 @@ var (
 	yamlFile []byte
 	//go:embed testdata/test.json
 	jsonFile []byte
-	jsonObj  interface{}
 )
-
-func init() {
-	if err := json.Unmarshal(jsonFile, &jsonObj); err != nil {
-		panic(err)
-	}
-}
 
 func yamlJSON(input interface{}) (interface{}, error) {
 	switch x := input.(type) {
@@ -95,6 +88,7 @@ func yamlJSON(input interface{}) (interface{}, error) {
 
 func compareWithJSON(t testing.TB, v interface{}) {
 	data, err := json.Marshal(v)
+	t.Logf("json: %s", string(data))
 	require.NoError(t, err)
 	require.JSONEq(t, string(jsonFile), string(data))
 }

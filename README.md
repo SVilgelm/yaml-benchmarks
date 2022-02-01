@@ -3,11 +3,11 @@
 ```shell
 % go test -bench=. -benchmem -benchtime 10000x
 
-BenchmarkUnmarshal/json-16                 10000              6348 ns/op            2168 B/op         60 allocs/op
-BenchmarkUnmarshal/yaml.V3-16              10000             41960 ns/op           19535 B/op        291 allocs/op
-BenchmarkUnmarshal/yaml.V2-16              10000             30319 ns/op           15666 B/op        260 allocs/op
-BenchmarkUnmarshal/ghodss-16               10000             42560 ns/op           20956 B/op        379 allocs/op
-BenchmarkUnmarshal/goccy-16                10000             74175 ns/op           79236 B/op       1090 allocs/op
+BenchmarkUnmarshal/json-16                 10000             20154 ns/op            9262 B/op        188 allocs/op
+BenchmarkUnmarshal/yaml.V2-16              10000             80254 ns/op           40298 B/op        683 allocs/op
+BenchmarkUnmarshal/yaml.V3-16              10000            105281 ns/op           48229 B/op        752 allocs/op
+BenchmarkUnmarshal/ghodss-16               10000            122681 ns/op           60261 B/op       1091 allocs/op
+BenchmarkUnmarshal/goccy-16                10000            213185 ns/op          311600 B/op       2601 allocs/op
 ```
 
 ## libraries

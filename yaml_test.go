@@ -10,6 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 	yamlV2 "gopkg.in/yaml.v2"
 	yamlV3 "gopkg.in/yaml.v3"
+	k8s "sigs.k8s.io/yaml"
 )
 
 var (
@@ -93,6 +94,11 @@ func compareWithJSON(t testing.TB, v interface{}) {
 	require.JSONEq(t, string(jsonFile), string(data))
 }
 
+func k8sOpt(d *json.Decoder) *json.Decoder {
+	d.UseNumber()
+	return d
+}
+
 func TestUnmarshalToInterface(t *testing.T) {
 	t.Run("json", func(t *testing.T) {
 		var v interface{}
@@ -121,6 +127,16 @@ func TestUnmarshalToInterface(t *testing.T) {
 	t.Run("goccy", func(t *testing.T) {
 		var v interface{}
 		require.NoError(t, goccy.Unmarshal(yamlFile, &v))
+		compareWithJSON(t, v)
+	})
+	t.Run("k8s", func(t *testing.T) {
+		var v interface{}
+		require.NoError(t, k8s.Unmarshal(yamlFile, &v))
+		compareWithJSON(t, v)
+	})
+	t.Run("k8s: Number", func(t *testing.T) {
+		var v interface{}
+		require.NoError(t, k8s.Unmarshal(yamlFile, &v, k8sOpt))
 		compareWithJSON(t, v)
 	})
 }
@@ -171,6 +187,24 @@ func BenchmarkUnmarshal(b *testing.B) {
 		for i := 0; i < b.N; i++ {
 			var v interface{}
 			_ = goccy.Unmarshal(yamlFile, &v)
+			benchmarkRes = v
+		}
+		benchmarkRes = res
+	})
+	b.Run("k8s", func(b *testing.B) {
+		var res interface{}
+		for i := 0; i < b.N; i++ {
+			var v interface{}
+			_ = k8s.Unmarshal(yamlFile, &v)
+			benchmarkRes = v
+		}
+		benchmarkRes = res
+	})
+	b.Run("k8s: Number", func(b *testing.B) {
+		var res interface{}
+		for i := 0; i < b.N; i++ {
+			var v interface{}
+			_ = k8s.Unmarshal(yamlFile, &v, k8sOpt)
 			benchmarkRes = v
 		}
 		benchmarkRes = res

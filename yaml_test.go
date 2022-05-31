@@ -7,6 +7,7 @@ import (
 
 	ghodss "github.com/ghodss/yaml"
 	goccy "github.com/goccy/go-yaml"
+	invopop "github.com/invopop/yaml"
 	"github.com/stretchr/testify/require"
 	yamlV2 "gopkg.in/yaml.v2"
 	yamlV3 "gopkg.in/yaml.v3"
@@ -139,6 +140,11 @@ func TestUnmarshalToInterface(t *testing.T) {
 		require.NoError(t, k8s.Unmarshal(yamlFile, &v, k8sOpt))
 		compareWithJSON(t, v)
 	})
+	t.Run("invopop", func(t *testing.T) {
+		var v interface{}
+		require.NoError(t, invopop.Unmarshal(yamlFile, &v))
+		compareWithJSON(t, v)
+	})
 }
 
 var benchmarkRes interface{}
@@ -171,14 +177,14 @@ func BenchmarkUnmarshal(b *testing.B) {
 			j, _ := yamlJSON(v)
 			benchmarkRes = j
 		}
-		benchmarkRes = res
+		res = res
 	})
 	b.Run("ghodss", func(b *testing.B) {
 		var res interface{}
 		for i := 0; i < b.N; i++ {
 			var v interface{}
 			_ = ghodss.Unmarshal(yamlFile, &v)
-			benchmarkRes = v
+			res = v
 		}
 		benchmarkRes = res
 	})
@@ -187,7 +193,7 @@ func BenchmarkUnmarshal(b *testing.B) {
 		for i := 0; i < b.N; i++ {
 			var v interface{}
 			_ = goccy.Unmarshal(yamlFile, &v)
-			benchmarkRes = v
+			res = v
 		}
 		benchmarkRes = res
 	})
@@ -196,7 +202,7 @@ func BenchmarkUnmarshal(b *testing.B) {
 		for i := 0; i < b.N; i++ {
 			var v interface{}
 			_ = k8s.Unmarshal(yamlFile, &v)
-			benchmarkRes = v
+			res = v
 		}
 		benchmarkRes = res
 	})
@@ -205,7 +211,16 @@ func BenchmarkUnmarshal(b *testing.B) {
 		for i := 0; i < b.N; i++ {
 			var v interface{}
 			_ = k8s.Unmarshal(yamlFile, &v, k8sOpt)
-			benchmarkRes = v
+			res = v
+		}
+		benchmarkRes = res
+	})
+	b.Run("invopop", func(b *testing.B) {
+		var res interface{}
+		for i := 0; i < b.N; i++ {
+			var v interface{}
+			_ = invopop.Unmarshal(yamlFile, &v)
+			res = v
 		}
 		benchmarkRes = res
 	})

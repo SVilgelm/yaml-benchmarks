@@ -3,21 +3,21 @@
 ```shell
 % go test -bench=. -benchmem -benchtime 10000x
 
-BenchmarkUnmarshal/json-16                 10000             21107 ns/op            9263 B/op        188 allocs/op
-BenchmarkUnmarshal/yaml.V2-16              10000             83208 ns/op           40298 B/op        683 allocs/op
-BenchmarkUnmarshal/yaml.V3-16              10000             95817 ns/op           48549 B/op        761 allocs/op
-BenchmarkUnmarshal/ghodss-16               10000            126235 ns/op           60254 B/op       1072 allocs/op
-BenchmarkUnmarshal/k8s-16                  10000            128281 ns/op           62656 B/op       1080 allocs/op
-BenchmarkUnmarshal/k8s:_Number-16          10000            133754 ns/op           62691 B/op       1080 allocs/op
-BenchmarkUnmarshal/invopop-16              10000            141098 ns/op           64318 B/op       1122 allocs/op
-BenchmarkUnmarshal/goccy-16                10000            205752 ns/op          308235 B/op       2461 allocs/op
+BenchmarkUnmarshal/json-8                  10000             17238 ns/op            9296 B/op        190 allocs/op
+BenchmarkUnmarshal/yaml.V3-8               10000             55256 ns/op           49349 B/op        772 allocs/op
+BenchmarkUnmarshal/yaml.V2-8               10000             45868 ns/op           40703 B/op        693 allocs/op
+BenchmarkUnmarshal/ghodss-8                10000             63666 ns/op           55549 B/op       1024 allocs/op
+BenchmarkUnmarshal/goccy-8                 10000             79901 ns/op          106389 B/op       1927 allocs/op
+BenchmarkUnmarshal/k8s-8                   10000             64616 ns/op           57970 B/op       1032 allocs/op
+BenchmarkUnmarshal/k8s:_Number-8           10000             64631 ns/op           58001 B/op       1032 allocs/op
+BenchmarkUnmarshal/invopop-8               10000             72919 ns/op           59991 B/op       1073 allocs/op
 ```
 
 ## libraries
 
 * <https://github.com/ghodss/yaml> v1.0.0
-* <https://github.com/goccy/go-yaml> v1.9.5
+* <https://github.com/goccy/go-yaml> v1.17.1
+* <https://github.com/invopop/yaml> v0.3.1
 * <https://gopkg.in/yaml.v2> v2.4.0
 * <https://gopkg.in/yaml.v3> v3.0.1
-* <https://github.com/kubernetes-sigs/yaml> v1.3.0
-* <https://github.com/invopop/yaml> v0.1.0
+* <https://github.com/kubernetes-sigs/yaml> v1.4.0

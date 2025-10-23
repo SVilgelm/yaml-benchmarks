@@ -9,6 +9,7 @@ import (
 	goccy "github.com/goccy/go-yaml"
 	invopop "github.com/invopop/yaml"
 	"github.com/stretchr/testify/require"
+	yamlV4 "go.yaml.in/yaml/v4"
 	yamlV2 "gopkg.in/yaml.v2"
 	yamlV3 "gopkg.in/yaml.v3"
 	k8s "sigs.k8s.io/yaml"
@@ -21,11 +22,11 @@ var (
 	jsonFile []byte
 )
 
-func yamlJSON(input interface{}) (interface{}, error) {
+func yamlJSON(input any) (any, error) {
 	switch x := input.(type) {
-	case map[interface{}]interface{}:
-		m := make(map[string]interface{}, len(x))
-		nonstrings := make(map[interface{}]interface{})
+	case map[any]any:
+		m := make(map[string]any, len(x))
+		nonstrings := make(map[any]any)
 
 		// Store string keys and values as such.
 		for k, v := range x {
@@ -60,8 +61,8 @@ func yamlJSON(input interface{}) (interface{}, error) {
 
 		return m, nil
 
-	case map[string]interface{}:
-		m := make(map[string]interface{}, len(x))
+	case map[string]any:
+		m := make(map[string]any, len(x))
 
 		// Check sub items
 		for k, v := range x {
@@ -75,7 +76,7 @@ func yamlJSON(input interface{}) (interface{}, error) {
 
 		return m, nil
 
-	case []interface{}:
+	case []any:
 		for i, v := range x {
 			if o, err := yamlJSON(v); err != nil {
 				return nil, err
@@ -88,7 +89,7 @@ func yamlJSON(input interface{}) (interface{}, error) {
 	return input, nil
 }
 
-func compareWithJSON(t testing.TB, v interface{}) {
+func compareWithJSON(t testing.TB, v any) {
 	data, err := json.Marshal(v)
 	t.Logf("json: %s", string(data))
 	require.NoError(t, err)
@@ -102,77 +103,94 @@ func k8sOpt(d *json.Decoder) *json.Decoder {
 
 func TestUnmarshalToInterface(t *testing.T) {
 	t.Run("json", func(t *testing.T) {
-		var v interface{}
+		var v any
 		require.NoError(t, json.Unmarshal(jsonFile, &v))
 		compareWithJSON(t, v)
 	})
+	t.Run("yaml.v4", func(t *testing.T) {
+		var v any
+		require.NoError(t, yamlV4.Unmarshal(yamlFile, &v))
+		j, err := yamlJSON(v)
+		require.NoError(t, err)
+		compareWithJSON(t, j)
+	})
 	t.Run("yaml.v3", func(t *testing.T) {
-		var v interface{}
+		var v any
 		require.NoError(t, yamlV3.Unmarshal(yamlFile, &v))
 		j, err := yamlJSON(v)
 		require.NoError(t, err)
 		compareWithJSON(t, j)
 	})
 	t.Run("yaml.v2", func(t *testing.T) {
-		var v interface{}
+		var v any
 		require.NoError(t, yamlV2.Unmarshal(yamlFile, &v))
 		j, err := yamlJSON(v)
 		require.NoError(t, err)
 		compareWithJSON(t, j)
 	})
 	t.Run("ghodss", func(t *testing.T) {
-		var v interface{}
+		var v any
 		require.NoError(t, ghodss.Unmarshal(yamlFile, &v))
 		compareWithJSON(t, v)
 	})
 	t.Run("goccy", func(t *testing.T) {
-		var v interface{}
+		var v any
 		require.NoError(t, goccy.Unmarshal(yamlFile, &v))
 		compareWithJSON(t, v)
 	})
 	t.Run("k8s", func(t *testing.T) {
-		var v interface{}
+		var v any
 		require.NoError(t, k8s.Unmarshal(yamlFile, &v))
 		compareWithJSON(t, v)
 	})
 	t.Run("k8s: Number", func(t *testing.T) {
-		var v interface{}
+		var v any
 		require.NoError(t, k8s.Unmarshal(yamlFile, &v, k8sOpt))
 		compareWithJSON(t, v)
 	})
 	t.Run("invopop", func(t *testing.T) {
-		var v interface{}
+		var v any
 		require.NoError(t, invopop.Unmarshal(yamlFile, &v))
 		compareWithJSON(t, v)
 	})
 }
 
-var benchmarkRes interface{}
+var benchmarkRes any
 
 func BenchmarkUnmarshal(b *testing.B) {
 	b.Run("json", func(b *testing.B) {
-		var res interface{}
+		var res any
 		for i := 0; i < b.N; i++ {
-			var v interface{}
+			var v any
 			_ = json.Unmarshal(jsonFile, &v)
 			res = v
 		}
 		benchmarkRes = res
 	})
-	b.Run("yaml.V3", func(b *testing.B) {
-		var res interface{}
+	b.Run("yaml.v4", func(b *testing.B) {
+		var res any
 		for i := 0; i < b.N; i++ {
-			var v interface{}
+			var v any
+			_ = yamlV4.Unmarshal(yamlFile, &v)
+			j, _ := yamlJSON(v)
+			res = j
+		}
+		benchmarkRes = res
+	})
+	b.Run("yaml.v3", func(b *testing.B) {
+		var res any
+		for i := 0; i < b.N; i++ {
+			var v any
 			_ = yamlV3.Unmarshal(yamlFile, &v)
 			j, _ := yamlJSON(v)
 			res = j
 		}
 		benchmarkRes = res
 	})
-	b.Run("yaml.V2", func(b *testing.B) {
-		var res interface{}
+	b.Run("yaml.v2", func(b *testing.B) {
+		var res any
 		for i := 0; i < b.N; i++ {
-			var v interface{}
+			var v any
 			_ = yamlV2.Unmarshal(yamlFile, &v)
 			j, _ := yamlJSON(v)
 			benchmarkRes = j
@@ -180,45 +198,45 @@ func BenchmarkUnmarshal(b *testing.B) {
 		res = res
 	})
 	b.Run("ghodss", func(b *testing.B) {
-		var res interface{}
+		var res any
 		for i := 0; i < b.N; i++ {
-			var v interface{}
+			var v any
 			_ = ghodss.Unmarshal(yamlFile, &v)
 			res = v
 		}
 		benchmarkRes = res
 	})
 	b.Run("goccy", func(b *testing.B) {
-		var res interface{}
+		var res any
 		for i := 0; i < b.N; i++ {
-			var v interface{}
+			var v any
 			_ = goccy.Unmarshal(yamlFile, &v)
 			res = v
 		}
 		benchmarkRes = res
 	})
 	b.Run("k8s", func(b *testing.B) {
-		var res interface{}
+		var res any
 		for i := 0; i < b.N; i++ {
-			var v interface{}
+			var v any
 			_ = k8s.Unmarshal(yamlFile, &v)
 			res = v
 		}
 		benchmarkRes = res
 	})
 	b.Run("k8s: Number", func(b *testing.B) {
-		var res interface{}
+		var res any
 		for i := 0; i < b.N; i++ {
-			var v interface{}
+			var v any
 			_ = k8s.Unmarshal(yamlFile, &v, k8sOpt)
 			res = v
 		}
 		benchmarkRes = res
 	})
 	b.Run("invopop", func(b *testing.B) {
-		var res interface{}
+		var res any
 		for i := 0; i < b.N; i++ {
-			var v interface{}
+			var v any
 			_ = invopop.Unmarshal(yamlFile, &v)
 			res = v
 		}

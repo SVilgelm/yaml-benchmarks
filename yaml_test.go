@@ -3,6 +3,7 @@ package yaml_benchmarks
 import (
 	_ "embed"
 	"encoding/json"
+	jsonV2 "encoding/json/v2"
 	"testing"
 
 	ghodss "github.com/ghodss/yaml"
@@ -102,6 +103,11 @@ func k8sOpt(d *json.Decoder) *json.Decoder {
 }
 
 func TestUnmarshalToInterface(t *testing.T) {
+	t.Run("json.v2", func(t *testing.T) {
+		var v any
+		require.NoError(t, jsonV2.Unmarshal(jsonFile, &v))
+		compareWithJSON(t, v)
+	})
 	t.Run("json", func(t *testing.T) {
 		var v any
 		require.NoError(t, json.Unmarshal(jsonFile, &v))
@@ -158,6 +164,15 @@ func TestUnmarshalToInterface(t *testing.T) {
 var benchmarkRes any
 
 func BenchmarkUnmarshal(b *testing.B) {
+	b.Run("json.v2", func(b *testing.B) {
+		var res any
+		for i := 0; i < b.N; i++ {
+			var v any
+			_ = jsonV2.Unmarshal(jsonFile, &v)
+			res = v
+		}
+		benchmarkRes = res
+	})
 	b.Run("json", func(b *testing.B) {
 		var res any
 		for i := 0; i < b.N; i++ {

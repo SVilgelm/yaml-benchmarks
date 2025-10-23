@@ -3,7 +3,6 @@ package yaml_benchmarks
 import (
 	_ "embed"
 	"encoding/json"
-	jsonV2 "encoding/json/v2"
 	"testing"
 
 	ghodss "github.com/ghodss/yaml"
@@ -23,7 +22,9 @@ var (
 	jsonFile []byte
 )
 
-func yamlJSON(input any) (any, error) {
+func yamlJSON(tb testing.TB, input any) (any, error) {
+	tb.Helper()
+
 	switch x := input.(type) {
 	case map[any]any:
 		m := make(map[string]any, len(x))
@@ -31,7 +32,7 @@ func yamlJSON(input any) (any, error) {
 
 		// Store string keys and values as such.
 		for k, v := range x {
-			jv, err := yamlJSON(v)
+			jv, err := yamlJSON(tb, v)
 			if err != nil {
 				return nil, err
 			}
@@ -45,7 +46,7 @@ func yamlJSON(input any) (any, error) {
 
 		// Convert non-string keys to JSON and then to strings, if possible, while giving preference to the string keys.
 		for k, jv := range nonstrings {
-			jk, err := yamlJSON(k)
+			jk, err := yamlJSON(tb, k)
 			if err != nil {
 				return nil, err
 			}
@@ -67,7 +68,7 @@ func yamlJSON(input any) (any, error) {
 
 		// Check sub items
 		for k, v := range x {
-			jv, err := yamlJSON(v)
+			jv, err := yamlJSON(tb, v)
 			if err != nil {
 				return nil, err
 			}
@@ -79,7 +80,7 @@ func yamlJSON(input any) (any, error) {
 
 	case []any:
 		for i, v := range x {
-			if o, err := yamlJSON(v); err != nil {
+			if o, err := yamlJSON(tb, v); err != nil {
 				return nil, err
 			} else {
 				x[i] = o
@@ -90,11 +91,13 @@ func yamlJSON(input any) (any, error) {
 	return input, nil
 }
 
-func compareWithJSON(t testing.TB, v any) {
+func compareWithJSON(tb testing.TB, v any) {
+	tb.Helper()
+
 	data, err := json.Marshal(v)
-	t.Logf("json: %s", string(data))
-	require.NoError(t, err)
-	require.JSONEq(t, string(jsonFile), string(data))
+	tb.Logf("json: %s", string(data))
+	require.NoError(tb, err)
+	require.JSONEq(tb, string(jsonFile), string(data))
 }
 
 func k8sOpt(d *json.Decoder) *json.Decoder {
@@ -103,11 +106,6 @@ func k8sOpt(d *json.Decoder) *json.Decoder {
 }
 
 func TestUnmarshalToInterface(t *testing.T) {
-	t.Run("json.v2", func(t *testing.T) {
-		var v any
-		require.NoError(t, jsonV2.Unmarshal(jsonFile, &v))
-		compareWithJSON(t, v)
-	})
 	t.Run("json", func(t *testing.T) {
 		var v any
 		require.NoError(t, json.Unmarshal(jsonFile, &v))
@@ -116,21 +114,21 @@ func TestUnmarshalToInterface(t *testing.T) {
 	t.Run("yaml.v4", func(t *testing.T) {
 		var v any
 		require.NoError(t, yamlV4.Unmarshal(yamlFile, &v))
-		j, err := yamlJSON(v)
+		j, err := yamlJSON(t, v)
 		require.NoError(t, err)
 		compareWithJSON(t, j)
 	})
 	t.Run("yaml.v3", func(t *testing.T) {
 		var v any
 		require.NoError(t, yamlV3.Unmarshal(yamlFile, &v))
-		j, err := yamlJSON(v)
+		j, err := yamlJSON(t, v)
 		require.NoError(t, err)
 		compareWithJSON(t, j)
 	})
 	t.Run("yaml.v2", func(t *testing.T) {
 		var v any
 		require.NoError(t, yamlV2.Unmarshal(yamlFile, &v))
-		j, err := yamlJSON(v)
+		j, err := yamlJSON(t, v)
 		require.NoError(t, err)
 		compareWithJSON(t, j)
 	})
@@ -164,15 +162,6 @@ func TestUnmarshalToInterface(t *testing.T) {
 var benchmarkRes any
 
 func BenchmarkUnmarshal(b *testing.B) {
-	b.Run("json.v2", func(b *testing.B) {
-		var res any
-		for i := 0; i < b.N; i++ {
-			var v any
-			_ = jsonV2.Unmarshal(jsonFile, &v)
-			res = v
-		}
-		benchmarkRes = res
-	})
 	b.Run("json", func(b *testing.B) {
 		var res any
 		for i := 0; i < b.N; i++ {
@@ -187,7 +176,7 @@ func BenchmarkUnmarshal(b *testing.B) {
 		for i := 0; i < b.N; i++ {
 			var v any
 			_ = yamlV4.Unmarshal(yamlFile, &v)
-			j, _ := yamlJSON(v)
+			j, _ := yamlJSON(b, v)
 			res = j
 		}
 		benchmarkRes = res
@@ -197,7 +186,7 @@ func BenchmarkUnmarshal(b *testing.B) {
 		for i := 0; i < b.N; i++ {
 			var v any
 			_ = yamlV3.Unmarshal(yamlFile, &v)
-			j, _ := yamlJSON(v)
+			j, _ := yamlJSON(b, v)
 			res = j
 		}
 		benchmarkRes = res
@@ -207,7 +196,7 @@ func BenchmarkUnmarshal(b *testing.B) {
 		for i := 0; i < b.N; i++ {
 			var v any
 			_ = yamlV2.Unmarshal(yamlFile, &v)
-			j, _ := yamlJSON(v)
+			j, _ := yamlJSON(b, v)
 			benchmarkRes = j
 		}
 		res = res

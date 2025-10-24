@@ -10,16 +10,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestUnmarshalToInterfaceJsonV2(t *testing.T) {
+func TestUnmarshalToInterface(t *testing.T) {
 	t.Run("json.v2", func(t *testing.T) {
 		var v any
 		require.NoError(t, jsonV2.Unmarshal(jsonFile, &v))
 		compareWithJSON(t, v)
 	})
-	TestUnmarshalToInterface(t)
+	testUnmarshalToInterface(t)
 }
 
-func BenchmarkUnmarshalJsonV2(b *testing.B) {
+func BenchmarkUnmarshalToInterface(b *testing.B) {
 	b.Run("json.v2", func(b *testing.B) {
 		var res any
 		for i := 0; i < b.N; i++ {
@@ -29,5 +29,5 @@ func BenchmarkUnmarshalJsonV2(b *testing.B) {
 		}
 		benchmarkRes = res
 	})
-	BenchmarkUnmarshal(b)
+	benchmarkUnmarshalToInterface(b)
 }

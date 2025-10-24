@@ -105,7 +105,7 @@ func k8sOpt(d *json.Decoder) *json.Decoder {
 	return d
 }
 
-func TestUnmarshalToInterface(t *testing.T) {
+func testUnmarshalToInterface(t *testing.T) {
 	t.Run("json", func(t *testing.T) {
 		var v any
 		require.NoError(t, json.Unmarshal(jsonFile, &v))
@@ -161,7 +161,7 @@ func TestUnmarshalToInterface(t *testing.T) {
 
 var benchmarkRes any
 
-func BenchmarkUnmarshal(b *testing.B) {
+func benchmarkUnmarshalToInterface(b *testing.B) {
 	b.Run("json", func(b *testing.B) {
 		var res any
 		for i := 0; i < b.N; i++ {
@@ -197,9 +197,9 @@ func BenchmarkUnmarshal(b *testing.B) {
 			var v any
 			_ = yamlV2.Unmarshal(yamlFile, &v)
 			j, _ := yamlJSON(b, v)
-			benchmarkRes = j
+			res = j
 		}
-		res = res
+		benchmarkRes = res
 	})
 	b.Run("ghodss", func(b *testing.B) {
 		var res any

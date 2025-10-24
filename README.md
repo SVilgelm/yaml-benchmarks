@@ -13,18 +13,18 @@ go test -bench=. -benchmem -benchtime 10000x
 goos: darwin
 goarch: arm64
 cpu: Apple M1
-BenchmarkUnmarshal/json-8                  10000             17139 ns/op            9297 B/op        190 allocs/op
-BenchmarkUnmarshal/yaml.v4-8               10000             63663 ns/op           49349 B/op        772 allocs/op
-BenchmarkUnmarshal/yaml.v3-8               10000             63183 ns/op           49348 B/op        772 allocs/op
-BenchmarkUnmarshal/yaml.v2-8               10000             54073 ns/op           40703 B/op        693 allocs/op
-BenchmarkUnmarshal/ghodss-8                10000             64281 ns/op           55551 B/op       1024 allocs/op
-BenchmarkUnmarshal/goccy-8                 10000             79373 ns/op          106342 B/op       1924 allocs/op
-BenchmarkUnmarshal/k8s-8                   10000             65548 ns/op           57967 B/op       1032 allocs/op
-BenchmarkUnmarshal/k8s:_Number-8           10000             65088 ns/op           57999 B/op       1032 allocs/op
-BenchmarkUnmarshal/invopop-8               10000             72514 ns/op           59994 B/op       1073 allocs/op
+BenchmarkUnmarshalToInterface/json-8               10000             16897 ns/op            9297 B/op        190 allocs/op                                                  
+BenchmarkUnmarshalToInterface/yaml.v4-8            10000             64740 ns/op           49349 B/op        772 allocs/op                                                  
+BenchmarkUnmarshalToInterface/yaml.v3-8            10000             63798 ns/op           49348 B/op        772 allocs/op                                                  
+BenchmarkUnmarshalToInterface/yaml.v2-8            10000             53949 ns/op           40703 B/op        693 allocs/op                                                  
+BenchmarkUnmarshalToInterface/ghodss-8             10000             64315 ns/op           55550 B/op       1024 allocs/op                                                  
+BenchmarkUnmarshalToInterface/goccy-8              10000             79215 ns/op          106334 B/op       1924 allocs/op                                                  
+BenchmarkUnmarshalToInterface/k8s-8                10000             65694 ns/op           57966 B/op       1032 allocs/op                                                  
+BenchmarkUnmarshalToInterface/k8s:_Number-8        10000             64948 ns/op           58004 B/op       1032 allocs/op                                                  
+BenchmarkUnmarshalToInterface/invopop-8            10000             72977 ns/op           59993 B/op       1073 allocs/op                                                  
 ```
 
-## benchmark results with jsonv2
+## benchmark results with jsonv2 enabled
 
 ```shell
 GOEXPERIMENT=jsonv2 go test -bench=. -benchmem -benchtime 10000x
@@ -32,16 +32,16 @@ GOEXPERIMENT=jsonv2 go test -bench=. -benchmem -benchtime 10000x
 goos: darwin
 goarch: arm64
 cpu: Apple M1
-BenchmarkUnmarshalJsonV2/json.v2-8                 10000             10453 ns/op            8675 B/op        158 allocs/op
-BenchmarkUnmarshalJsonV2/json-8                    10000             16685 ns/op            9963 B/op        225 allocs/op
-BenchmarkUnmarshalJsonV2/yaml.v4-8                 10000             64145 ns/op           49367 B/op        774 allocs/op
-BenchmarkUnmarshalJsonV2/yaml.v3-8                 10000             64219 ns/op           49368 B/op        774 allocs/op
-BenchmarkUnmarshalJsonV2/yaml.v2-8                 10000             56330 ns/op           40722 B/op        695 allocs/op
-BenchmarkUnmarshalJsonV2/ghodss-8                  10000             69396 ns/op           53096 B/op        972 allocs/op
-BenchmarkUnmarshalJsonV2/goccy-8                   10000             81734 ns/op          106331 B/op       1924 allocs/op
-BenchmarkUnmarshalJsonV2/k8s-8                     10000             71388 ns/op           55529 B/op        983 allocs/op
-BenchmarkUnmarshalJsonV2/k8s:_Number-8             10000             71687 ns/op           55744 B/op        985 allocs/op
-BenchmarkUnmarshalJsonV2/invopop-8                 10000             82664 ns/op           57540 B/op       1024 allocs/op
+BenchmarkUnmarshalToInterface/json.v2-8                    10000              8331 ns/op            8676 B/op        158 allocs/op                                          
+BenchmarkUnmarshalToInterface/json-8                       10000             16243 ns/op            9963 B/op        225 allocs/op                                          
+BenchmarkUnmarshalToInterface/yaml.v4-8                    10000             64649 ns/op           49367 B/op        774 allocs/op                                          
+BenchmarkUnmarshalToInterface/yaml.v3-8                    10000             64925 ns/op           49369 B/op        774 allocs/op                                          
+BenchmarkUnmarshalToInterface/yaml.v2-8                    10000             55159 ns/op           40722 B/op        695 allocs/op                                          
+BenchmarkUnmarshalToInterface/ghodss-8                     10000             68947 ns/op           53109 B/op        972 allocs/op                                          
+BenchmarkUnmarshalToInterface/goccy-8                      10000             81587 ns/op          106337 B/op       1924 allocs/op                                          
+BenchmarkUnmarshalToInterface/k8s-8                        10000             72701 ns/op           55527 B/op        983 allocs/op                                          
+BenchmarkUnmarshalToInterface/k8s:_Number-8                10000             73656 ns/op           55744 B/op        985 allocs/op                                          
+BenchmarkUnmarshalToInterface/invopop-8                    10000             80729 ns/op           57534 B/op       1024 allocs/op                                          
 ```
 
 ## libraries

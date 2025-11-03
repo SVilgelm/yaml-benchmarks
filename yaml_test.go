@@ -111,52 +111,59 @@ func testUnmarshalToInterface(t *testing.T) {
 		require.NoError(t, json.Unmarshal(jsonFile, &v))
 		compareWithJSON(t, v)
 	})
-	t.Run("yaml.v4", func(t *testing.T) {
-		var v any
-		require.NoError(t, yamlV4.Unmarshal(yamlFile, &v))
-		j, err := yamlJSON(t, v)
-		require.NoError(t, err)
-		compareWithJSON(t, j)
-	})
-	t.Run("yaml.v3", func(t *testing.T) {
-		var v any
-		require.NoError(t, yamlV3.Unmarshal(yamlFile, &v))
-		j, err := yamlJSON(t, v)
-		require.NoError(t, err)
-		compareWithJSON(t, j)
-	})
-	t.Run("yaml.v2", func(t *testing.T) {
-		var v any
-		require.NoError(t, yamlV2.Unmarshal(yamlFile, &v))
-		j, err := yamlJSON(t, v)
-		require.NoError(t, err)
-		compareWithJSON(t, j)
-	})
-	t.Run("ghodss", func(t *testing.T) {
-		var v any
-		require.NoError(t, ghodss.Unmarshal(yamlFile, &v))
-		compareWithJSON(t, v)
-	})
-	t.Run("goccy", func(t *testing.T) {
-		var v any
-		require.NoError(t, goccy.Unmarshal(yamlFile, &v))
-		compareWithJSON(t, v)
-	})
-	t.Run("k8s", func(t *testing.T) {
-		var v any
-		require.NoError(t, k8s.Unmarshal(yamlFile, &v))
-		compareWithJSON(t, v)
-	})
-	t.Run("k8s: Number", func(t *testing.T) {
-		var v any
-		require.NoError(t, k8s.Unmarshal(yamlFile, &v, k8sOpt))
-		compareWithJSON(t, v)
-	})
-	t.Run("invopop", func(t *testing.T) {
-		var v any
-		require.NoError(t, invopop.Unmarshal(yamlFile, &v))
-		compareWithJSON(t, v)
-	})
+	for name, data := range map[string][]byte{
+		"yaml": yamlFile,
+		"json": jsonFile,
+	} {
+		t.Run(name+" input", func(t *testing.T) {
+			t.Run("yaml.v4", func(t *testing.T) {
+				var v any
+				require.NoError(t, yamlV4.Unmarshal(data, &v))
+				j, err := yamlJSON(t, v)
+				require.NoError(t, err)
+				compareWithJSON(t, j)
+			})
+			t.Run("yaml.v3", func(t *testing.T) {
+				var v any
+				require.NoError(t, yamlV3.Unmarshal(data, &v))
+				j, err := yamlJSON(t, v)
+				require.NoError(t, err)
+				compareWithJSON(t, j)
+			})
+			t.Run("yaml.v2", func(t *testing.T) {
+				var v any
+				require.NoError(t, yamlV2.Unmarshal(data, &v))
+				j, err := yamlJSON(t, v)
+				require.NoError(t, err)
+				compareWithJSON(t, j)
+			})
+			t.Run("ghodss", func(t *testing.T) {
+				var v any
+				require.NoError(t, ghodss.Unmarshal(data, &v))
+				compareWithJSON(t, v)
+			})
+			t.Run("goccy", func(t *testing.T) {
+				var v any
+				require.NoError(t, goccy.Unmarshal(data, &v))
+				compareWithJSON(t, v)
+			})
+			t.Run("k8s", func(t *testing.T) {
+				var v any
+				require.NoError(t, k8s.Unmarshal(data, &v))
+				compareWithJSON(t, v)
+			})
+			t.Run("k8s: Number", func(t *testing.T) {
+				var v any
+				require.NoError(t, k8s.Unmarshal(data, &v, k8sOpt))
+				compareWithJSON(t, v)
+			})
+			t.Run("invopop", func(t *testing.T) {
+				var v any
+				require.NoError(t, invopop.Unmarshal(data, &v))
+				compareWithJSON(t, v)
+			})
+		})
+	}
 }
 
 var benchmarkRes any
@@ -171,80 +178,87 @@ func benchmarkUnmarshalToInterface(b *testing.B) {
 		}
 		benchmarkRes = res
 	})
-	b.Run("yaml.v4", func(b *testing.B) {
-		var res any
-		for i := 0; i < b.N; i++ {
-			var v any
-			_ = yamlV4.Unmarshal(yamlFile, &v)
-			j, _ := yamlJSON(b, v)
-			res = j
-		}
-		benchmarkRes = res
-	})
-	b.Run("yaml.v3", func(b *testing.B) {
-		var res any
-		for i := 0; i < b.N; i++ {
-			var v any
-			_ = yamlV3.Unmarshal(yamlFile, &v)
-			j, _ := yamlJSON(b, v)
-			res = j
-		}
-		benchmarkRes = res
-	})
-	b.Run("yaml.v2", func(b *testing.B) {
-		var res any
-		for i := 0; i < b.N; i++ {
-			var v any
-			_ = yamlV2.Unmarshal(yamlFile, &v)
-			j, _ := yamlJSON(b, v)
-			res = j
-		}
-		benchmarkRes = res
-	})
-	b.Run("ghodss", func(b *testing.B) {
-		var res any
-		for i := 0; i < b.N; i++ {
-			var v any
-			_ = ghodss.Unmarshal(yamlFile, &v)
-			res = v
-		}
-		benchmarkRes = res
-	})
-	b.Run("goccy", func(b *testing.B) {
-		var res any
-		for i := 0; i < b.N; i++ {
-			var v any
-			_ = goccy.Unmarshal(yamlFile, &v)
-			res = v
-		}
-		benchmarkRes = res
-	})
-	b.Run("k8s", func(b *testing.B) {
-		var res any
-		for i := 0; i < b.N; i++ {
-			var v any
-			_ = k8s.Unmarshal(yamlFile, &v)
-			res = v
-		}
-		benchmarkRes = res
-	})
-	b.Run("k8s: Number", func(b *testing.B) {
-		var res any
-		for i := 0; i < b.N; i++ {
-			var v any
-			_ = k8s.Unmarshal(yamlFile, &v, k8sOpt)
-			res = v
-		}
-		benchmarkRes = res
-	})
-	b.Run("invopop", func(b *testing.B) {
-		var res any
-		for i := 0; i < b.N; i++ {
-			var v any
-			_ = invopop.Unmarshal(yamlFile, &v)
-			res = v
-		}
-		benchmarkRes = res
-	})
+	for name, data := range map[string][]byte{
+		"yaml": yamlFile,
+		"json": jsonFile,
+	} {
+		b.Run(name+" input", func(b *testing.B) {
+			b.Run("yaml.v4", func(b *testing.B) {
+				var res any
+				for i := 0; i < b.N; i++ {
+					var v any
+					_ = yamlV4.Unmarshal(data, &v)
+					j, _ := yamlJSON(b, v)
+					res = j
+				}
+				benchmarkRes = res
+			})
+			b.Run("yaml.v3", func(b *testing.B) {
+				var res any
+				for i := 0; i < b.N; i++ {
+					var v any
+					_ = yamlV3.Unmarshal(data, &v)
+					j, _ := yamlJSON(b, v)
+					res = j
+				}
+				benchmarkRes = res
+			})
+			b.Run("yaml.v2", func(b *testing.B) {
+				var res any
+				for i := 0; i < b.N; i++ {
+					var v any
+					_ = yamlV2.Unmarshal(data, &v)
+					j, _ := yamlJSON(b, v)
+					res = j
+				}
+				benchmarkRes = res
+			})
+			b.Run("ghodss", func(b *testing.B) {
+				var res any
+				for i := 0; i < b.N; i++ {
+					var v any
+					_ = ghodss.Unmarshal(data, &v)
+					res = v
+				}
+				benchmarkRes = res
+			})
+			b.Run("goccy", func(b *testing.B) {
+				var res any
+				for i := 0; i < b.N; i++ {
+					var v any
+					_ = goccy.Unmarshal(data, &v)
+					res = v
+				}
+				benchmarkRes = res
+			})
+			b.Run("k8s", func(b *testing.B) {
+				var res any
+				for i := 0; i < b.N; i++ {
+					var v any
+					_ = k8s.Unmarshal(data, &v)
+					res = v
+				}
+				benchmarkRes = res
+			})
+			b.Run("k8s: Number", func(b *testing.B) {
+				var res any
+				for i := 0; i < b.N; i++ {
+					var v any
+					_ = k8s.Unmarshal(data, &v, k8sOpt)
+					res = v
+				}
+				benchmarkRes = res
+			})
+			b.Run("invopop", func(b *testing.B) {
+				var res any
+				for i := 0; i < b.N; i++ {
+					var v any
+					_ = invopop.Unmarshal(data, &v)
+					res = v
+				}
+				benchmarkRes = res
+			})
+		})
+	}
 	b.Logf("Res type: %T", benchmarkRes)
 }
